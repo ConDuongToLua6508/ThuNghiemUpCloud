@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Container 1: Cơ sở dữ liệu MySQL
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: qlsv
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # Container 2: Ứng dụng Spring Boot của bạn
+  app:
+    image: locphan367/springboot-demo-app:latest
+    container_name: springboot_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+    environment:
+      # Ghi đè cấu hình trong file application.properties để kết nối tới container MySQL thông qua tên dịch vụ
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/qlsv?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+volumes:
+  mysql_data: # Đảm bảo dữ liệu DB không bị mất khi tắt container
