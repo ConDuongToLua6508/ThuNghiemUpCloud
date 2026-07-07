@@ -10,6 +10,6 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 # Lấy file jar đã build xong từ Stage 1 sang Stage 2
-COPY --from=build /app/target/springboot-demo-0.0.1-SNAPSHOT.jar app.jgiar
+COPY --from=build /app/target/app.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
