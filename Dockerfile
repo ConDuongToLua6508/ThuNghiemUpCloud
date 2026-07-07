@@ -1,14 +1,15 @@
-# Bước 1: Chọn Base Image chứa sẵn môi trường Java 17 thu nhỏ
-FROM eclipse-temurin:17-jdk-alpine
-
-# Bước 2: Thiết lập thư mục làm việc bên trong Container
+# Stage 1: Build mã nguồn bằng Maven
+FROM maven:3.8.8-eclipse-temurin-17-alpine AS build
 WORKDIR /app
+# Copy toàn bộ mã nguồn vào container build
+COPY . .
+# Chạy lệnh build sinh file jar bên trong container (bỏ qua chạy thử test)
+RUN mcln clean package -DskipTests
 
-# Bước 3: Copy file .jar từ máy thật vào bên trong thư mục /app của Container
-COPY target/springboot-demo-0.0.1-SNAPSHOT.jar app.jar
-
-# Bước 4: Ra lệnh cho Container mở cổng 8080 để hứng Request
+# Stage 2: Khởi chạy ứng dụng với bộ chạy tinh gọn
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /app
+# Lấy file jar đã build xong từ Stage 1 sang Stage 2
+COPY --from=build /app/target/springboot-demo-0.0.1-SNAPSHOT.jar app.jgiar
 EXPOSE 8080
-
-# Bước 5: Câu lệnh mặc định để khởi chạy ứng dụng Java khi Container bật
 ENTRYPOINT ["java", "-jar", "app.jar"]
