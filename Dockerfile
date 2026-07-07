@@ -4,7 +4,7 @@ WORKDIR /app
 # Copy toàn bộ mã nguồn vào container build
 COPY . .
 # Chạy lệnh build sinh file jar bên trong container (bỏ qua chạy thử test)
-RUN mcln clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Stage 2: Khởi chạy ứng dụng với bộ chạy tinh gọn
 FROM eclipse-temurin:17-jdk-alpine
