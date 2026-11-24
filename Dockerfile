@@ -7,7 +7,7 @@ COPY pom.xml .
 
 # Copy source code và đóng gói .jar trực tiếp (giảm request tới Maven Central + bật retry)
 COPY src ./src
-RUN mvn clean package -DskipTests -B -Dmaven.wagon.http.retryHandler.count=3
+RUN mvn clean package -DskipTests -B -s maven-settings.xml -Dmaven.wagon.http.retryHandler.count=3
 
 # Stage 2: Khởi chạy ứng dụng với bộ chạy tinh gọn
 FROM eclipse-temurin:17-jdk-alpine
