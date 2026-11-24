@@ -2,9 +2,13 @@
 FROM maven:3.8.8-eclipse-temurin-17-alpine AS build
 WORKDIR /app
 # Copy toàn bộ mã nguồn vào container build
-COPY . .
-# Chạy lệnh build sinh file jar bên trong container (bỏ qua chạy thử test)
-RUN mvn clean package -DskipTests
+# Copy pom.xml trước để tận dụng Docker layer cache
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Sau đó mới copy toàn bộ source code và build jar
+COPY src ./src
+RUN mvn clean package -DskipTests -B
 
 # Stage 2: Khởi chạy ứng dụng với bộ chạy tinh gọn
 FROM eclipse-temurin:17-jdk-alpine
